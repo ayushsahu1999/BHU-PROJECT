@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Maps</title>
+
+    <style>
+        #map-canvas{
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&library=places"
+    type="text/javascript"></script>
+</head>
+<body>
+    <div id="map-canvas"></div>
+
+    <script>
+        var directionsDisplay = new google.maps.DirectionsRenderer();
+        var directionsService = new google.maps.DirectionsService();
+
+        var map;
+        var starting = new google.maps.LatLng(26.484987, 80.273709);
+        var ending = new google.maps.LatLng(26.477799, 80.296700);
+        var starting1 = new google.maps.LatLng(26.476967, 80.280302);
+        var ending1 = new google.maps.LatLng(26.486424, 80.290531);
+        var mapOptions = {
+            zoom: 14,
+            center: starting
+        };
+
+        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+        directionsDisplay.setMap(map);
+
+        var request = {
+            origin: starting,
+            destination: ending,
+            travelMode: 'DRIVING'
+        };
+        
+        var request1 = {
+            origin: starting1,
+            destination: ending1,
+            travelMode: 'DRIVING'
+        };
+        
+
+        directionsService.route(request, function(response, status) {
+        if (status == "OK") {
+            //directionsDisplay.setDirections(response);
+            console.log('1')
+            //document.getElementById('Gresponse').innerHTML = JSON.stringify(response);
+            createPolyline(response);
+        }
+        });
+        
+        directionsService.route(request1, function(response, status) {
+        if (status == "OK") {
+            
+            //directionsDisplay.setDirections(response);
+            console.log('2')
+            //document.getElementById('Gresponse').innerHTML = JSON.stringify(response);
+            createPolyline1(response);
+        }
+        });
+        
+        line = null;
+        createPolyline(directionsDisplay.getDirections());
+        function createPolyline(directionResult) {
+            
+            line = new google.maps.Polyline({
+                path: [],
+                strokeColor: '#ffffff',
+                strokeOpacity: 0.5,
+                strokeWeight: 4,
+                icons: [{
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 8,
+                        strokeColor: '#393'
+                    },
+                    offset: '100%'
+                }
+                ]
+
+            });
+            
+            var legs = directionResult.routes[0].legs;
+            
+            for (i = 0; i < legs.length; i++) {
+                var steps = legs[i].steps;
+                for (j = 0; j < steps.length; j++) {
+                    var nextSegment = steps[j].path;
+                    for (k = 0; k < nextSegment.length; k++) {
+                        line.getPath().push(nextSegment[k]);
+                    }
+                }
+            }
+            line.setMap(map);
+            animate();
+        };
+        function animate() {
+            var count = 0;
+            int = setInterval(function() {
+                count = (count + 1) % 200;
+                var icons = line.get('icons');
+                
+                icons[0].offset = (count / 2) + '%';
+                
+                line.set('icons', icons);
+            }, 35);
+        };
+        
+        line1 = null;
+        createPolyline1(directionsDisplay.getDirections());
+        function createPolyline1(directionResult) {
+            
+            line1 = new google.maps.Polyline({
+                path: [],
+                strokeColor: '#ffffff',
+                strokeOpacity: 0.5,
+                strokeWeight: 4,
+                icons: [{
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 8,
+                        strokeColor: '#874331'
+                    },
+                    offset: '100%'
+                }
+                ]
+
+            });
+            var legs = directionResult.routes[0].legs;
+            for (i = 0; i < legs.length; i++) {
+                var steps = legs[i].steps;
+                for (j = 0; j < steps.length; j++) {
+                    var nextSegment = steps[j].path;
+                    for (k = 0; k < nextSegment.length; k++) {
+                        line1.getPath().push(nextSegment[k]);
+                    }
+                }
+            }
+            line1.setMap(map);
+            animate1();
+        };
+        function animate1() {
+            var count = 0;
+            int = setInterval(function() {
+                count = (count + 1) % 200;
+                var icons1 = line1.get('icons');
+                
+                icons1[0].offset = (count / 4) + '%';
+                
+                line1.set('icons', icons1);
+            }, 48);
+        };
+        
+
+    </script>
+</body>
+</html>
