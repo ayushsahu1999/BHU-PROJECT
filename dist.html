@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Maps</title>
+
+    <style>
+        #map-canvas{
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4A9x0LSscb8LCa48LY5FUCiM65RvtacA&library=drawing,places,geometry"
+    type="text/javascript"></script>
+</head>
+<body>
+    <div id="map-canvas"></div>
+
+    <script>
+        
+        var map;
+        var starting = new google.maps.LatLng(26.471190, 80.289976);
+        var ending = new google.maps.LatLng(26.507192, 80.274133);
+        var mapOptions = {
+            zoom: 14,
+            center: starting
+        };
+        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+        
+        
+        var service = new google.maps.DistanceMatrixService();
+
+        service.getDistanceMatrix(
+        {
+            origins: [starting],
+            destinations: [ending],
+            travelMode: 'DRIVING'
+        }, callback);
+
+        function callback(response, status) {
+
+            console.log(response)
+            if (status == 'OK') {
+    var origins = response.originAddresses;
+    var destinations = response.destinationAddresses;
+
+    for (var i = 0; i < origins.length; i++) {
+      var results = response.rows[i].elements;
+      for (var j = 0; j < results.length; j++) {
+        var element = results[j];
+        var distance = element.distance.text;
+        var duration = element.duration.text;
+        console.log(distance, duration);
+      }
+    }
+  }
+        }
+    </script>
+</body>
+</html>
